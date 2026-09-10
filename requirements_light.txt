@@ -1,0 +1,11 @@
+# Lightweight dependencies for Windows local execution (Zero heavy build tools)
+# Note: The pipeline can even run with ZERO external packages using the standard library!
+
+# Optional: PostgreSQL driver (Fast 2MB wheel, installs in ~3 seconds)
+psycopg2-binary>=2.9.9
+
+# Optional: Data manipulation
+pandas>=2.1.0
+
+# Optional: Kafka client (if running local Kafka broker)
+kafka-python>=2.0.2

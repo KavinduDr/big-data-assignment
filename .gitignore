@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+myenv/
+venv/
+env/
+ENV/
+.venv/
+
+# PySpark / Checkpoint directories
+data/checkpoints/
+data/test_tariffs/
+
+# Temporary files
+.tmp_*
+*.tmp
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+
+# Airflow logs and sqlite db if run locally
+airflow.db
+airflow.cfg
+webserver_config.py
+logs/

@@ -1,0 +1,21 @@
+# Big Data Assignment - Smart Grid Kappa Architecture Dependencies
+
+# Stream Processing & Core
+pyspark>=3.5.0
+
+# Ingestion (Kafka Client)
+# Note: kafka-python-ng or kafka-python provides pure Python support; confluent-kafka uses librdkafka
+kafka-python>=2.0.2
+confluent-kafka>=2.3.0; platform_system != "Windows" or python_version < "3.13"
+
+# Database (PostgreSQL)
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+
+# Orchestration (Airflow)
+apache-airflow>=2.8.0
+
+# Utilities & Data Manipulation
+pandas>=2.1.0
+python-dotenv>=1.0.0
+pydantic>=2.5.0
