@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kafka Streaming Operations Center | Big Data Pipeline & Avro DLQ Lab</title>
-  <meta name="description" content="Production-grade real-time streaming operations center demonstrating Kafka ingestion, Avro serialization, running average aggregation, retry logic, and Dead Letter Queue (DLQ).">
+  <meta name="description"
+    content="Production-grade real-time streaming operations center demonstrating Kafka ingestion, Avro serialization, running average aggregation, retry logic, and Dead Letter Queue (DLQ).">
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>">
 </head>
+
 <body>
   <div class="app-container">
-    
+
     <!-- Top Navigation Bar -->
     <header class="top-nav" role="banner">
       <div class="brand-section">
@@ -33,7 +37,7 @@
 
         <nav class="tabs-nav" role="tablist">
           <button class="tab-btn active" id="tab-btn-avro" role="tab" aria-selected="true" onclick="switchTab('avro')">
-            Chapter 3: Avro & DLQ Lab
+            Avro & DLQ Lab
           </button>
           <button class="tab-btn" id="tab-btn-grid" role="tab" aria-selected="false" onclick="switchTab('grid')">
             Smart Grid Kappa Monitor
@@ -44,7 +48,7 @@
 
     <!-- TAB 1: CHAPTER 3 AVRO & DLQ LAB -->
     <main id="tab-avro-content" role="main">
-      
+
       <!-- Top KPI Metrics -->
       <section class="kpi-grid" aria-label="Key Performance Indicators">
         <div class="kpi-card cyan">
@@ -86,10 +90,10 @@
 
       <!-- Main Two-Column Layout -->
       <div class="dashboard-grid">
-        
+
         <!-- Left Column: Live Event Stream Table & Trend Chart -->
         <div class="main-column">
-          
+
           <!-- Running Average Convergence Chart -->
           <section class="content-card">
             <div class="card-title-bar">
@@ -185,7 +189,7 @@
 
         <!-- Right Column: Interactive Chaos / Fault Injection Console -->
         <aside class="sidebar-column">
-          
+
           <section class="content-card chaos-console">
             <div class="card-title-bar">
               <h2>
@@ -195,9 +199,10 @@
                 Marker's Interactive Console
               </h2>
             </div>
-            
+
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-              Click below to interactively demonstrate self-healing retry mechanics and dead letter queue isolation live:
+              Click below to interactively demonstrate self-healing retry mechanics and dead letter queue isolation
+              live:
             </p>
 
             <div class="console-actions">
@@ -239,9 +244,11 @@
             </div>
 
             <!-- Cadence Selector -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem;">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem;">
               <span style="color: var(--text-muted);">Stream Interval:</span>
-              <select id="select-speed" onchange="changeSpeed(this.value)" style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.3rem 0.5rem; font-family: var(--font-mono);">
+              <select id="select-speed" onchange="changeSpeed(this.value)"
+                style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.3rem 0.5rem; font-family: var(--font-mono);">
                 <option value="2.0">Normal (2.0s)</option>
                 <option value="1.0" selected>Fast (1.0s)</option>
                 <option value="0.5">Turbo (0.5s)</option>
@@ -252,16 +259,8 @@
 
           <!-- Assignment Rubric Checklist Card -->
           <section class="content-card">
-            <div class="card-title-bar">
-              <h2>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="9 11 12 14 22 4"></polyline>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                Assignment Compliance
-              </h2>
-            </div>
-            <ul style="list-style: none; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem; color: var(--text-muted);">
+            <ul
+              style="list-style: none; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem; color: var(--text-muted);">
               <li style="display: flex; align-items: center; gap: 0.5rem;">
                 <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
                 <span><strong>Avro Serialization:</strong> <code>order.avsc</code></span>
@@ -292,7 +291,7 @@
 
     <!-- TAB 2: SMART GRID KAPPA MONITOR -->
     <main id="tab-grid-content" style="display: none;" role="main">
-      
+
       <!-- Top Grid Pipeline Status Banner -->
       <section class="content-card" style="margin-bottom: 1.5rem;">
         <div class="card-title-bar">
@@ -305,7 +304,8 @@
           <span class="badge-status success" id="grid-db-badge">Database Sink: SQLite</span>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 2rem; font-size: 0.85rem; color: var(--text-muted);">
-          <div>Simulated Day: <strong style="color: var(--text-main);" id="grid-sim-day">Day #1</strong> (5-min cycle)</div>
+          <div>Simulated Day: <strong style="color: var(--text-main);" id="grid-sim-day">Day #1</strong> (5-min cycle)
+          </div>
           <div>Batch Number: <strong style="color: var(--text-main);" id="grid-batch-num">Batch #0</strong></div>
           <div>Total Telemetry Events: <strong style="color: var(--text-main);" id="grid-total-events">0</strong></div>
           <div>Join Strategy: <strong style="color: var(--accent-cyan);">Stream-Static on household_id</strong></div>
@@ -327,4 +327,5 @@
   <!-- Scripts -->
   <script src="/static/js/app.js"></script>
 </body>
+
 </html>
