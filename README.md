@@ -17,31 +17,9 @@ Unlike traditional **Lambda Architecture** (which maintains dual batch and strea
 
 Auxiliary datasets (such as daily static tariff drops) are integrated via **Stream-Static Joins**, allowing dimension enrichment without interrupting real-time stateful computation.
 
-```mermaid
-flowchart TD
-    subgraph Ingestion["1. Ingestion Layer"]
-        P1["telemetry_producer.py<br/>(Every 2s JSON Stream)"] -->|Topic: smart_meters| KFK[("Apache Kafka<br/>Broker (KRaft)")]
-        P2["tariff_batch_generator.py<br/>(1 Sim Day = 5 Minutes)"] -->|Atomic File Swap| CSV[("Static Reference Drops<br/>data/raw_tariffs/")]
-    end
-
-    subgraph Processing["2. Stream Processing Layer (PySpark)"]
-        KFK -->|Kafka Consumer Stream| SP["stream_processor.py<br/>(PySpark Structured Streaming)"]
-        CSV -->|Static Dimension Source| SP
-        SP -->|Stream-Static Join on household_id| JOIN["Enriched Stream"]
-        JOIN -->|Watermark: 10s | Window: 1m| AGG["Zone Window Aggregation<br/>- Net Grid Load<br/>- Renewable Contribution %<br/>- Financial Cost Estimates"]
-    end
-
-    subgraph Storage["3. Serving & Storage Layer"]
-        AGG -->|foreachBatch JDBC Sink| PG[("PostgreSQL<br/>grid_zone_metrics")]
-    end
-
-    subgraph Orchestration["4. Orchestration & Health Audit"]
-        AF["Apache Airflow DAG<br/>Schedule: */5 * * * *"] -->|Scheduled Drop Trigger| P2
-        AF -->|Data Quality Gate| CSV
-        AF -->|Broker Connectivity Probe| KFK
-        AF -->|Freshness & Lag Monitor| PG
-    end
-```
+<p align="center">
+  <img src="diagram.png" alt="Smart Grid Kappa Architecture Pipeline Diagram" width="85%" />
+</p>
 
 ---
 
