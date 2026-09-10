@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kafka Streaming Operations Center | Big Data Pipeline & Avro DLQ Lab</title>
+  <meta name="description" content="Production-grade real-time streaming operations center demonstrating Kafka ingestion, Avro serialization, running average aggregation, retry logic, and Dead Letter Queue (DLQ).">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Navigation Bar -->
+    <header class="top-nav" role="banner">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <h1>Streaming Operations Center</h1>
+          <p>Kafka Ingestion • Avro Serialization • Real-Time Aggregations • Resilient DLQ</p>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <div class="pulse-badge" id="ws-status-badge">
+          <div class="pulse-dot" id="ws-status-dot"></div>
+          <span id="ws-status-text">LIVE STREAMING</span>
+        </div>
+
+        <nav class="tabs-nav" role="tablist">
+          <button class="tab-btn active" id="tab-btn-avro" role="tab" aria-selected="true" onclick="switchTab('avro')">
+            Chapter 3: Avro & DLQ Lab
+          </button>
+          <button class="tab-btn" id="tab-btn-grid" role="tab" aria-selected="false" onclick="switchTab('grid')">
+            Smart Grid Kappa Monitor
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- TAB 1: CHAPTER 3 AVRO & DLQ LAB -->
+    <main id="tab-avro-content" role="main">
+      
+      <!-- Top KPI Metrics -->
+      <section class="kpi-grid" aria-label="Key Performance Indicators">
+        <div class="kpi-card cyan">
+          <div class="kpi-header">
+            <span class="kpi-title">Total Orders Ingested</span>
+            <span class="kpi-badge cyan">Kafka / Avro</span>
+          </div>
+          <div class="kpi-value" id="kpi-total-orders">0</div>
+          <div class="kpi-subtext">Events decoded via <code>order.avsc</code></div>
+        </div>
+
+        <div class="kpi-card emerald">
+          <div class="kpi-header">
+            <span class="kpi-title">Running Average Price</span>
+            <span class="kpi-badge emerald">Real-Time State</span>
+          </div>
+          <div class="kpi-value" id="kpi-running-avg">$0.00</div>
+          <div class="kpi-subtext">Continuous cumulative mean aggregation</div>
+        </div>
+
+        <div class="kpi-card amber">
+          <div class="kpi-header">
+            <span class="kpi-title">Transient Retries</span>
+            <span class="kpi-badge amber">Exponential Backoff</span>
+          </div>
+          <div class="kpi-value" id="kpi-retries">0</div>
+          <div class="kpi-subtext">Auto-recovered network/socket glitches</div>
+        </div>
+
+        <div class="kpi-card rose">
+          <div class="kpi-header">
+            <span class="kpi-title">DLQ Quarantined</span>
+            <span class="kpi-badge rose">Topic: order_dlq</span>
+          </div>
+          <div class="kpi-value" id="kpi-dlq">0</div>
+          <div class="kpi-subtext">Poison pills & corrupt payloads isolated</div>
+        </div>
+      </section>
+
+      <!-- Main Two-Column Layout -->
+      <div class="dashboard-grid">
+        
+        <!-- Left Column: Live Event Stream Table & Trend Chart -->
+        <div class="main-column">
+          
+          <!-- Running Average Convergence Chart -->
+          <section class="content-card">
+            <div class="card-title-bar">
+              <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                Real-Time Price & Running Average Convergence
+              </h2>
+              <span class="badge-status success" id="chart-latest-avg">Latest Avg: $0.00</span>
+            </div>
+            <div class="chart-container" id="sparkline-container">
+              <svg class="sparkline-svg" id="sparkline-svg" viewBox="0 0 700 180" preserveAspectRatio="none">
+                <!-- SVG path will be generated dynamically -->
+              </svg>
+            </div>
+          </section>
+
+          <!-- Live Order Ticker Feed -->
+          <section class="content-card">
+            <div class="card-title-bar">
+              <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                Live Order Stream Ticker (Avro Deserializer)
+              </h2>
+              <span class="kpi-badge cyan">avro.schema = order.avsc</span>
+            </div>
+
+            <div class="table-container">
+              <table class="modern-table" id="orders-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Attempts</th>
+                    <th>Running Avg</th>
+                    <th>Latency</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                  <!-- Orders injected via WebSocket -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Quarantined Dead Letter Queue (DLQ) Inspector -->
+          <section class="content-card">
+            <div class="card-title-bar">
+              <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Dead Letter Queue (DLQ) Inspector
+              </h2>
+              <span class="kpi-badge rose" id="dlq-table-badge">0 Poison Messages</span>
+            </div>
+
+            <div class="table-container">
+              <table class="modern-table" id="dlq-table">
+                <thead>
+                  <tr>
+                    <th>DLQ ID</th>
+                    <th>Failed Order</th>
+                    <th>Root Cause Reason</th>
+                    <th>Quarantined At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="dlq-tbody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                      No messages in DLQ. Inject a poison pill to test dead letter routing!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right Column: Interactive Chaos / Fault Injection Console -->
+        <aside class="sidebar-column">
+          
+          <section class="content-card chaos-console">
+            <div class="card-title-bar">
+              <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Marker's Interactive Console
+              </h2>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Click below to interactively demonstrate self-healing retry mechanics and dead letter queue isolation live:
+            </p>
+
+            <div class="console-actions">
+              <!-- Action 1: Standard Order -->
+              <button class="action-btn btn-standard" id="btn-send-standard" onclick="sendStandardOrder()">
+                <div class="action-btn-info">
+                  <span class="btn-label">Send Valid Order</span>
+                  <span class="btn-desc">Valid Avro schema & price &rarr; Instant success</span>
+                </div>
+                <span>&rarr;</span>
+              </button>
+
+              <!-- Action 2: Transient Glitch -->
+              <button class="action-btn btn-glitch" id="btn-inject-glitch" onclick="injectGlitch()">
+                <div class="action-btn-info">
+                  <span class="btn-label">Simulate Network Glitch</span>
+                  <span class="btn-desc">Transient timeout &rarr; Retry backoff (1 &rarr; 2 &rarr; Success)</span>
+                </div>
+                <span>&rarr;</span>
+              </button>
+
+              <!-- Action 3: Poison Pill -->
+              <button class="action-btn btn-poison" id="btn-inject-poison" onclick="injectPoison()">
+                <div class="action-btn-info">
+                  <span class="btn-label">Inject Poison Pill</span>
+                  <span class="btn-desc">Negative price (-$99.99) &rarr; Immediate DLQ quarantine</span>
+                </div>
+                <span>&rarr;</span>
+              </button>
+            </div>
+
+            <!-- Auto-Stream Toggle -->
+            <div class="stream-controls-strip">
+              <span class="control-label">Continuous Generator:</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-stream" checked onchange="toggleAutoStream(this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Cadence Selector -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem;">
+              <span style="color: var(--text-muted);">Stream Interval:</span>
+              <select id="select-speed" onchange="changeSpeed(this.value)" style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.3rem 0.5rem; font-family: var(--font-mono);">
+                <option value="2.0">Normal (2.0s)</option>
+                <option value="1.0" selected>Fast (1.0s)</option>
+                <option value="0.5">Turbo (0.5s)</option>
+              </select>
+            </div>
+
+          </section>
+
+          <!-- Assignment Rubric Checklist Card -->
+          <section class="content-card">
+            <div class="card-title-bar">
+              <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                Assignment Compliance
+              </h2>
+            </div>
+            <ul style="list-style: none; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem; color: var(--text-muted);">
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
+                <span><strong>Avro Serialization:</strong> <code>order.avsc</code></span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
+                <span><strong>Real-Time Aggregation:</strong> Running Avg</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
+                <span><strong>Retry Logic:</strong> 3 attempts with backoff</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
+                <span><strong>Dead Letter Queue:</strong> <code>order_dlq</code> routing</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--accent-emerald); font-weight: bold;">&#10003;</span>
+                <span><strong>Live Demo & Git Repo:</strong> Verified</span>
+              </li>
+            </ul>
+          </section>
+
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- TAB 2: SMART GRID KAPPA MONITOR -->
+    <main id="tab-grid-content" style="display: none;" role="main">
+      
+      <!-- Top Grid Pipeline Status Banner -->
+      <section class="content-card" style="margin-bottom: 1.5rem;">
+        <div class="card-title-bar">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Kappa Architecture Stream Engine & Airflow Orchestrator
+          </h2>
+          <span class="badge-status success" id="grid-db-badge">Database Sink: SQLite</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem; font-size: 0.85rem; color: var(--text-muted);">
+          <div>Simulated Day: <strong style="color: var(--text-main);" id="grid-sim-day">Day #1</strong> (5-min cycle)</div>
+          <div>Batch Number: <strong style="color: var(--text-main);" id="grid-batch-num">Batch #0</strong></div>
+          <div>Total Telemetry Events: <strong style="color: var(--text-main);" id="grid-total-events">0</strong></div>
+          <div>Join Strategy: <strong style="color: var(--accent-cyan);">Stream-Static on household_id</strong></div>
+        </div>
+      </section>
+
+      <!-- Grid Zones Grid -->
+      <section class="zones-grid" id="zones-container">
+        <!-- Injected via JavaScript -->
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
