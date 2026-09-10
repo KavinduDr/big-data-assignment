@@ -144,9 +144,24 @@ Directly addresses the assignment brief from `Assignement Chapter 3.pdf`:
 
 ## 4. Quick Start & Live Demonstration Guide
 
-### Option A: ⚡ Instant Live Demo (Zero Docker & Zero Heavy Downloads)
-> **Recommended for Presentations & University Live Demos!**
-> If you have a weak internet connection or cannot download multi-gigabyte Docker images, you can run the complete Kappa pipeline live right now with **one command**:
+### Option 0: 🚀 Interactive Real-Time Web Dashboard (Recommended for Markers)
+> **Highest Recommendation for University Presentations & Marker Evaluation!**
+> Launches the high-performance, dark-mode real-time operations dashboard with zero build steps or npm installations.
+
+```bash
+python web_demo.py
+```
+This automatically boots the web server and opens [http://127.0.0.1:8000](http://127.0.0.1:8000) showcasing:
+- **Chapter 3 Avro & DLQ Operations Center**: Live order ticker with schema validation, real-time running average price KPI, and price trend sparklines.
+- **Marker's Interactive Chaos Console**: One-click buttons to inject valid orders, transient network timeouts (demonstrating 3-attempt backoff), and invalid poison pills (negative prices).
+- **Dead Letter Queue (DLQ) Inspector**: Quarantines poisoned records and allows real-time message remediation and re-driving.
+- **Smart Grid Kappa Monitor**: Real-time zone consumption vs. solar generation curves and Net Grid Load (`DRAW`/`FEED`).
+- **Interactive Swagger API Documentation**: Available live at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+---
+
+### Option A: ⚡ Instant Terminal Live Demo (Zero Docker & Zero Heavy Downloads)
+> If you prefer a pure terminal dashboard, you can run:
 
 ```bash
 python live_demo.py
